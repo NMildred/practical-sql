@@ -1,14 +1,14 @@
 # Dataset
 
-Этот датасет используется для расчёта retention.
+This dataset is used for retention analysis.
 
-## Структура
+## Structure
 
-- users — таблица регистраций
-- events — таблица пользовательской активности
+- `users` — table of user registrations
+- `events` — table of user activity
 
-## Как развернуть
+## How to Set Up
 
-1. Выполните schema.sql
-2. Запустите generate_users.sql
-3. Запустите generate_events.sql
+1. Run `schema.sql`
+2. Run `generate_users.sql`
+3. Run `generate_events.sql`

@@ -1,42 +1,42 @@
 # 🔴 Level 3 — Advanced Cases (Senior)
 
-Этот блок проверяет продвинутые навыки аналитика и мышление о качестве данных.
+This section tests advanced analyst skills and data quality awareness.
 
-⏱ Рекомендуемое время: 40–60 минут  
-🎯 Цель: научиться учитывать исключения, сегментировать пользователей и выявлять проблемы данных.
-
----
-
-## 📌 Задание 1 — Исключить Day 0
-
-Посчитайте retention, исключая события, произошедшие в день регистрации.
-
-Подсказка: фильтруйте `event_time > signup_date`.  
-💡 Почему это важно: Day 0 почти всегда завышает retention.
+⏱ Recommended time: 40–60 minutes  
+🎯 Goal: Learn to handle exceptions, segment users, and detect data issues.
 
 ---
 
-## 📌 Задание 2 — Retention только для активных пользователей
+## 📌 Task 1 — Exclude Day 0
 
-Посчитайте retention только для пользователей, у которых было больше одного события.
+Calculate retention excluding events that occurred on the signup day.
 
-Подсказка: сначала определите «активных» пользователей (`COUNT(event_id) > 1`), потом делайте когортный анализ.
-
----
-
-## 📌 Задание 3 — Проверка качества данных
-
-Ответьте письменно:
-
-- Есть ли пользователи без событий?  
-- Есть ли события без пользователя?  
-- Есть ли дубликаты?  
-- Какие другие проблемы могут исказить retention?
+**Hint:** filter `event_time > signup_date`.  
+💡 **Why this matters:** Day 0 often artificially inflates retention.
 
 ---
 
-## 📌 Дополнительно (опционально)
+## 📌 Task 2 — Retention for Active Users Only
 
-- Попробуйте переписать все предыдущие решения через **CTE vs inline queries**  
-- Подумайте, какие **индексы или материализованные представления** помогут ускорить расчёт retention  
-- Попробуйте построить **retention по сегментам**: устройство, источник трафика, география
+Calculate retention only for users who had more than one event.
+
+**Hint:** first identify “active” users (`COUNT(event_id) > 1`), then perform cohort analysis.
+
+---
+
+## 📌 Task 3 — Data Quality Check
+
+Answer in writing:
+
+- Are there users without events?  
+- Are there events without a user?  
+- Are there duplicate events?  
+- What other issues might distort retention?
+
+---
+
+## 📌 Optional / Bonus
+
+- Try rewriting previous solutions using **CTEs vs inline queries**  
+- Think about which **indexes or materialized views** could speed up retention calculations  
+- Build **retention by segments**: device, traffic source, geography

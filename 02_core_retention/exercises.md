@@ -1,48 +1,49 @@
 # 🟡 Level 2 — Core Retention (Cohort Analysis)
 
-Этот блок проверяет способность строить когортный анализ и считать retention по неделям.
+This section tests your ability to build cohort analysis and calculate weekly retention.
 
-⏱ Рекомендуемое время: 40–60 минут  
-🎯 Цель: научиться строить retention-матрицы и использовать разные подходы к подсчёту
-
----
-
-## 📌 Задание 1 — Недельные когорты
-
-Сформируйте недельные когорты пользователей по дате регистрации.
-
-Подсказка: используйте `toStartOfWeek(signup_date)`  
+⏱ Recommended time: 40–60 minutes  
+🎯 Goal: Learn how to build retention matrices and apply different calculation approaches.
 
 ---
 
-## 📌 Задание 2 — Retention по неделям
+## 📌 Task 1 — Weekly Cohorts
 
-Для каждой когорты посчитайте, сколько пользователей вернулось в последующие недели.
+Create weekly user cohorts based on the registration date.
 
-Подсказка: сначала формируем когорту, потом присоединяем активность.
-
----
-
-## 📌 Задание 3 — Retention через оконные функции
-
-Решение должно использовать оконные функции ClickHouse, чтобы посчитать, сколько пользователей удержалось относительно их когорты.
+**Hint:** Use `toStartOfWeek(signup_date)`
 
 ---
 
-## 📌 Задание 4 — Retention Matrix
+## 📌 Task 2 — Weekly Retention
 
-Постройте таблицу:
+For each cohort, calculate how many users returned in subsequent weeks.
 
-- строки — когорта (неделя регистрации)  
-- колонки — номер недели после регистрации (week 0, week 1, week 2…)  
-- значения — количество удержанных пользователей
-
-Подсказка: используйте `dateDiff('week', cohort_week, activity_week)`  
+**Hint:** First define the cohort, then join user activity.
 
 ---
 
-💡 Совет:
+## 📌 Task 3 — Retention Using Window Functions
 
-- Попробуйте сначала сделать naive версию (`retention_wrong.sql`), потом исправьте её (`retention_correct.sql`)  
-- Наконец, улучшите через оконные функции (`retention_window.sql`)  
-- Постройте matrix (`retention_matrix.sql`)
+The solution must use ClickHouse window functions to calculate retention relative to each cohort.
+
+---
+
+## 📌 Task 4 — Retention Matrix
+
+Build a table where:  
+
+- **Rows** represent the cohort (registration week)  
+- **Columns** represent the number of weeks after registration (week 0, week 1, week 2…)  
+- **Values** represent the number of retained users  
+
+**Hint:** Use `dateDiff('week', cohort_week, activity_week)`
+
+---
+
+## 💡 Recommendation
+
+1. First, try to build a naive version (`retention_wrong.sql`)  
+2. Then fix it (`retention_correct.sql`)  
+3. Improve it using window functions (`retention_window.sql`)  
+4. Finally, build the full matrix (`retention_matrix.sql`)

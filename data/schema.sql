@@ -1,28 +1,29 @@
--- Схема таблиц для PostgreSQL
+-- Table schema for PostgreSQL
 
--- Таблица пользователей
+-- Users table
 CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,  -- Автоматически увеличиваемый идентификатор пользователя
-    signup_date DATE            -- Дата регистрации
+    user_id SERIAL PRIMARY KEY,  -- Auto-incrementing user identifier
+    signup_date DATE             -- Registration date
 );
 
--- Таблица событий
+-- Events table
 CREATE TABLE events (
-    event_id SERIAL PRIMARY KEY,  -- Автоматически увеличиваемый идентификатор события
-    user_id INT,                  -- Идентификатор пользователя
-    event_time TIMESTAMP,         -- Время события
-    event_type TEXT               -- Тип события (например, 'activity', 'click', 'purchase')
+    event_id SERIAL PRIMARY KEY,  -- Auto-incrementing event identifier
+    user_id INT,                  -- User identifier
+    event_time TIMESTAMP,         -- Event timestamp
+    event_type TEXT               -- Event type (e.g., 'activity', 'click', 'purchase')
 );
 
--- Схема таблиц для ClickHouse
+-- Table schema for ClickHouse
 
--- Таблица пользователей
+-- Users table
 CREATE TABLE users (
     user_id Int32,
     signup_date Date
 ) ENGINE = MergeTree()
 ORDER BY user_id;
 
+-- Events table
 CREATE TABLE events (
     event_id Int32,
     user_id Int32,

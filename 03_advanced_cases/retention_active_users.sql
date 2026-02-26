@@ -1,21 +1,29 @@
--- 03_advanced_cases/solutions/retention_active_users.sql
--- PostgreSQL
+-- ================================================================
+-- Level 3 — Advanced Cases (Senior)
+-- Retention for Active Users Only
+-- PostgreSQL and ClickHouse
+-- ================================================================
+
+-- ================================================================
+-- PostgreSQL Version
+-- Retention only for users with more than one event
+-- ================================================================
 
 WITH active_users AS (
-    -- Находим пользователей с более чем одним событием
+    -- Identify users with more than one event
     SELECT user_id
     FROM events
     GROUP BY user_id
     HAVING COUNT(*) > 1
 ),
 cohorts AS (
-    -- Фиксируем когорту по неделе регистрации для активных пользователей
+    -- Define cohort as the week of signup for active users
     SELECT u.user_id, date_trunc('week', u.signup_date)::date AS cohort_week
     FROM users u
     JOIN active_users a ON u.user_id = a.user_id
 ),
 activity AS (
-    -- Берем события активных пользователей, округляем дату события до недели
+    -- Get events for active users, rounded to week
     SELECT 
         c.user_id,
         c.cohort_week,
@@ -25,12 +33,12 @@ activity AS (
     WHERE e.event_time::date >= c.cohort_week
 ),
 distinct_activity AS (
-    -- Убираем повторные события одного пользователя в одной неделе
+    -- Remove duplicate events per user per week
     SELECT DISTINCT cohort_week, activity_week, user_id
     FROM activity
 ),
 weekly_retention AS (
-    -- Подсчет retention по каждой неделе
+    -- Calculate weekly retention
     SELECT
         cohort_week,
         activity_week,
@@ -38,7 +46,7 @@ weekly_retention AS (
     FROM distinct_activity
     GROUP BY cohort_week, activity_week
 )
--- Финальный результат с кумулятивным retention
+-- Final result with cumulative retention
 SELECT
     cohort_week,
     activity_week,
@@ -51,18 +59,21 @@ SELECT
 FROM weekly_retention
 ORDER BY cohort_week, activity_week;
 
--- Retention только для "активных" пользователей (больше одного события) ClickHouse
+-- ================================================================
+-- ClickHouse Version
+-- Retention only for active users (more than one event)
+-- ================================================================
 
 WITH active_users AS (
     SELECT user_id
     FROM events
     GROUP BY user_id
-    HAVING COUNT(*) > 1  -- больше одного события
+    HAVING COUNT(*) > 1  -- More than one event
 ),
 cohorts AS (
     SELECT
         u.user_id,
-        date_trunc('week', u.signup_date)::date AS cohort_week
+        toStartOfWeek(u.signup_date) AS cohort_week
     FROM users u
     JOIN active_users a ON u.user_id = a.user_id
 ),
@@ -70,10 +81,10 @@ activity AS (
     SELECT
         c.user_id,
         c.cohort_week,
-        date_trunc('week', e.event_time)::date AS activity_week
+        toStartOfWeek(e.event_time) AS activity_week
     FROM cohorts c
     JOIN events e ON c.user_id = e.user_id
-    WHERE e.event_time::date >= c.cohort_week
+    WHERE e.event_time >= c.cohort_week
 ),
 distinct_activity AS (
     SELECT DISTINCT cohort_week, activity_week, user_id

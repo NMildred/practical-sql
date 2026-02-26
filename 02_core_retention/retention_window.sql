@@ -1,6 +1,9 @@
--- Запрос для PostgreSQL с использованием оконных функций:
--- Этот запрос использует оконные функции для расчёта retention, не создавая промежуточных CTE.
--- Важно, что этот запрос также учитывает когорты и активность пользователей.
+-- This script demonstrates retention calculation using window functions.
+-- Both PostgreSQL and ClickHouse versions are included for practice.
+-- It calculates weekly retention for cohorts and cumulative retained users.
+-- ================================================================
+
+-- PostgreSQL query using window functions:
 
 WITH cohorts AS (
     SELECT
@@ -18,7 +21,7 @@ activity AS (
     WHERE e.event_time::date >= c.cohort_week
 ),
 distinct_activity AS (
-    -- убираем дубликаты одного пользователя в одной неделе
+    -- Remove duplicate users within the same week
     SELECT DISTINCT cohort_week, activity_week, user_id
     FROM activity
 ),
@@ -42,12 +45,9 @@ SELECT
 FROM weekly_retention
 ORDER BY cohort_week, activity_week;
 
-
 -- =====================================================================
 
--- Запрос для ClickHouse с использованием оконных функций:
--- Этот запрос использует оконные функции для расчёта retention, не создавая промежуточных CTE.
--- Он также учитывает когорты и активность пользователей.
+-- ClickHouse query using window functions:
 
 WITH cohorts AS (
     SELECT
@@ -65,6 +65,7 @@ activity AS (
     WHERE e.event_time >= c.cohort_week
 ),
 distinct_activity AS (
+    -- Remove duplicate users within the same week
     SELECT DISTINCT cohort_week, activity_week, user_id
     FROM activity
 ),
@@ -87,5 +88,3 @@ SELECT
     ) AS cumulative_retained_users
 FROM weekly_retention
 ORDER BY cohort_week, activity_week;
-
-
