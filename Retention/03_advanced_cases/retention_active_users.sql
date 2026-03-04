@@ -1,15 +1,30 @@
--- Запрос для PostgreSQL с использованием оконных функций:
--- Этот запрос использует оконные функции для расчёта retention, не создавая промежуточных CTE.
--- Важно, что этот запрос также учитывает когорты и активность пользователей.
+-- ================================================================
+-- Level 3 — Advanced Cases (Senior)
+-- Retention for Active Users Only
+-- PostgreSQL and ClickHouse
+-- ================================================================
 
-WITH cohorts AS (
-    SELECT
-        user_id,
-        date_trunc('week', signup_date)::date AS cohort_week
-    FROM users
+-- ================================================================
+-- PostgreSQL Version
+-- Retention only for users with more than one event
+-- ================================================================
+
+WITH active_users AS (
+    -- Identify users with more than one event
+    SELECT user_id
+    FROM events
+    GROUP BY user_id
+    HAVING COUNT(*) > 1
+),
+cohorts AS (
+    -- Define cohort as the week of signup for active users
+    SELECT u.user_id, date_trunc('week', u.signup_date)::date AS cohort_week
+    FROM users u
+    JOIN active_users a ON u.user_id = a.user_id
 ),
 activity AS (
-    SELECT
+    -- Get events for active users, rounded to week
+    SELECT 
         c.user_id,
         c.cohort_week,
         date_trunc('week', e.event_time)::date AS activity_week
@@ -18,11 +33,12 @@ activity AS (
     WHERE e.event_time::date >= c.cohort_week
 ),
 distinct_activity AS (
-    -- убираем дубликаты одного пользователя в одной неделе
+    -- Remove duplicate events per user per week
     SELECT DISTINCT cohort_week, activity_week, user_id
     FROM activity
 ),
 weekly_retention AS (
+    -- Calculate weekly retention
     SELECT
         cohort_week,
         activity_week,
@@ -30,6 +46,7 @@ weekly_retention AS (
     FROM distinct_activity
     GROUP BY cohort_week, activity_week
 )
+-- Final result with cumulative retention
 SELECT
     cohort_week,
     activity_week,
@@ -42,18 +59,23 @@ SELECT
 FROM weekly_retention
 ORDER BY cohort_week, activity_week;
 
+-- ================================================================
+-- ClickHouse Version
+-- Retention only for active users (more than one event)
+-- ================================================================
 
--- =====================================================================
-
--- Запрос для ClickHouse с использованием оконных функций:
--- Этот запрос использует оконные функции для расчёта retention, не создавая промежуточных CTE.
--- Он также учитывает когорты и активность пользователей.
-
-WITH cohorts AS (
+WITH active_users AS (
+    SELECT user_id
+    FROM events
+    GROUP BY user_id
+    HAVING COUNT(*) > 1  -- More than one event
+),
+cohorts AS (
     SELECT
-        user_id,
-        toStartOfWeek(signup_date) AS cohort_week
-    FROM users
+        u.user_id,
+        toStartOfWeek(u.signup_date) AS cohort_week
+    FROM users u
+    JOIN active_users a ON u.user_id = a.user_id
 ),
 activity AS (
     SELECT
@@ -87,5 +109,3 @@ SELECT
     ) AS cumulative_retained_users
 FROM weekly_retention
 ORDER BY cohort_week, activity_week;
-
-

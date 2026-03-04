@@ -1,4 +1,4 @@
-# 03_advanced_cases/solutions/data_quality_issues.md
+# 03_advanced_cases/solutions/data_quality_issues.ru.md
 
 ## Проверка качества данных и потенциальные проблемы
 
